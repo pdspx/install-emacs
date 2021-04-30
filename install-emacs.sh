@@ -3,8 +3,7 @@
 DIR_NAME=emacsbuild
 WORKING_DIR=/tmp/$DIR_NAME
 RAMDISK_SIZE=768m
-STANDARD_URL="https://github.com/emacs-mirror/emacs/archive/refs/heads/master.zip"
-NATIVE_COMP_URL="https://github.com/emacs-mirror/emacs/archive/refs/heads/feature/native-comp.zip"
+URL="https://github.com/emacs-mirror/emacs/archive/refs/heads/master.zip"
 
 function standard {
     ./configure --with-cairo CFLAGS="-O2 -mtune=native -march=native -pipe"
@@ -22,14 +21,6 @@ if (( $EUID != 0 )); then
     exit
 fi
 
-if [[ $1 == 'native' ]]; then
-    url=$NATIVE_COMP_URL
-    folder_name=emacs-feature-native-comp
-else
-    url=$STANDARD_URL
-    folder_name=emacs-master
-fi
-
 # Setup ramdisk
 mkdir -p $WORKING_DIR
 chmod 777 $WORKING_DIR
@@ -37,9 +28,9 @@ mount -t tmpfs -o size=$RAMDISK_SIZE $DIR_NAME $WORKING_DIR
 pushd $WORKING_DIR
 
 # Download archive and decompress
-curl -o emacs.zip -L $url
+curl -o emacs.zip -L $URL
 unzip -qo emacs.zip
-cd $folder_name
+cd emacs-master
 
 # Configure & build
 ./autogen.sh
